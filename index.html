@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avian P2P</title>
+    <link rel="stylesheet" href="public/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="public/assets/css/style.css">
+</head>
+
+<body>
+    <header class="meeting-room meeting-room-header">
+        <button id="participantsBtn" class="btn-hover-light">
+            <span class="material-icons">people</span>
+            <div class="participant-count">2</div>
+        </button>
+        <button id="messageBtn" class="btn-hover-light">
+            <span class="material-icons">message</span>
+        </button>
+    </header>
+    <main class="meeting-room meeting-room-main">
+        <div class="a-top">
+            <div id="meetingContainer" class="w-75 d-none">
+                <div class="top-remote-video-show-wrap d-flex">
+                    <div class="call-wrap" style="background-color: black;">
+                        <div class="video-wrap" id="divUsers" style="display: flex; flex-wrap: wrap;">
+                            <div id="me" class="userbox display-center flex-column">
+                                <h2 class="display-center" style="font-size: 14px;"></h2>
+                                <div class="display-center">
+                                    <video autoplay muted id="localVideoPlayer"></video>
+                                </div>
+                            </div>
+                            <div id="otherTemplate" class="userbox display-center flex-column" style="display: none;">
+                                <h2 class="display-center" style="font-size: 14px;"></h2>
+                                <div class="display-center">
+                                    <video autoplay muted></video>
+                                    <audio autoplay controls muted style="display: none;"></audio>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="meeting-room meeting-room-footer">
+        <button id="meetingDetailsBtn" class="btn-hover-light">
+            Meeting Details
+            <span class="material-icons">keyboard_arrow_down</span>
+        </button>
+        <div class="bottom-middle">
+            <button id="micToggleBtn"><span class="material-icons">mic_off</span></button>
+            <button id="callBtn"><span class="material-icons">call</span></button>
+            <button id="videoCamToggle"><span class="material-icons">videocam_off</span></button>
+        </div>
+        <div class="bottom-right">
+            <button id="screenShareBtn" class="btn-hover-light">
+                Present Now
+                <span class="material-icons">present_to_all</span>
+            </button>
+            <button id="moreOptionsBtn" class="btn-hover-light">
+                <span class="material-icons">more_vert</span>
+            </button>
+        </div>
+    </footer>
+</body>
+
+</html>
