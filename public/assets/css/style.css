@@ -1,5 +1,38 @@
+:root {
+    --primary: #d32f2f;
+    --primaryLight: #ff5f52;
+    --primaryDark: #8e0000;
+    --primaryBackground: #ffefee;
+    --green: rgb(23, 191, 99);
+    --light: #f2f2f2;
+    --lightGrey: rgb(230, 236, 240);
+    --darkGrey: rgba(0, 0, 0, 0.6);
+    --greyText: rgb(101, 119, 134);
+    --greyButtonText: rgba(0, 0, 0, 0.34);
+    --dark: #424242;
+    --spacing: 15px;
+}
+
 body {
     font-family: 'Roboto', sans-serif !important;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+textarea:focus,
+input:focus {
+    outline: none;
+}
+
+button {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    cursor: pointer;
 }
 
 .logo {
@@ -7,5 +40,58 @@ body {
 }
 
 .navbar-brand {
-    font-size: 27px;
+    font-size: 16px;
+    padding-left: 10px;
+}
+
+button.meeting-btn {
+    background-color: var(--primary);
+    color: var(--light);
+    transition: background-color 0.2s ease-out, color 0.2s ease-out;
+}
+
+button.meeting-btn:hover {
+    background-color: var(--primaryLight);
+    color: white;
+}
+
+button.meeting-btn-alt {
+    background-color: #fff;
+    color: var(--primary);
+    transition: background-color 0.2s ease-out, color 0.2s ease-out;
+}
+
+button.meeting-btn-alt:hover {
+    background-color: var(--light);
+    color: var(--primaryLight);
+}
+
+.navbar-nav li.nav-item:not(:last-child) {
+    margin-right: 10px;
+}
+
+.navbar-nav li.nav-item a {
+    color: var(--primary);
+    font-size: 16px;
+}
+
+.jumbotron {
+    background-color: var(--lightGrey);
+}
+
+.jumbotron-image {
+    height: 390px;
+    border: 5px solid var(--light);
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px var(--dark);
+    display: block;
+    margin: 0 auto;
+}
+
+.jumbotron-list > *:not(:last-child) {
+    margin-bottom: var(--spacing);
+}
+
+.code-input {
+    background-color: transparent;
 }
