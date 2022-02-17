@@ -17,12 +17,19 @@ html,body {
     font-family: 'Roboto', sans-serif !important;
     height: 100%;
     min-height: 100%;
+    margin: 0;
+    box-sizing: border-box;
 }
 
 ul {
     list-style: none;
     margin: 0;
     padding: 0;
+}
+
+a {
+    text-decoration: none;
+    color: var(--dark);
 }
 
 textarea:focus,
@@ -38,16 +45,47 @@ button:focus {
     cursor: pointer;
 }
 
-.logo {
-    height: 43px;
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--spacing);
+    background-color: #fff;
 }
 
-.navbar-brand {
+.brand-container img {
+    vertical-align: middle;    
+}
+
+.brand-container a.navbar-brand {
     font-size: 16px;
     padding-left: 10px;
 }
 
+.logo {
+    height: 38px;
+}
+
+ul.nav-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+ul.nav-buttons .nav-item:not(:last-child) {
+    margin-right: var(--spacing);
+}
+
 button.meeting-btn {
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 10px var(--spacing);
     background-color: var(--primary);
     color: var(--light);
     transition: background-color 0.2s ease-out, color 0.2s ease-out;
@@ -59,8 +97,11 @@ button.meeting-btn:hover {
 }
 
 button.meeting-btn-alt {
+    padding: var(--spacing);
     background-color: #fff;
     color: var(--primary);
+    border-radius: 5px;
+    font-size: 16px;
     transition: background-color 0.2s ease-out, color 0.2s ease-out;
 }
 
@@ -79,7 +120,16 @@ button.meeting-btn-alt:hover {
 }
 
 .jumbotron {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
     background-color: var(--lightGrey);
+    height: 100%;
+}
+
+.jumbotron h1 {
+    font-size: 58px;
+    color: var(--dark);
 }
 
 .jumbotron-image {
@@ -97,6 +147,8 @@ button.meeting-btn-alt:hover {
 
 .code-input {
     background-color: transparent;
+    font-size: 16px;
+    color: var(--dark);
 }
 
 /* index.html */
@@ -122,7 +174,7 @@ button.btn-hover-light:hover {
 .meeting-room-main {
     height: 100%;
     min-height: 100%;
-    background-color: var(--darkGrey);
+    background-color: var(--dark);
 }
 
 .meeting-room-footer {
@@ -161,7 +213,7 @@ button.btn-hover-light:hover {
 }
 
 button span.material-icons {
-    vertical-align: bottom;
+    vertical-align: middle;
 }
 
 #participantsBtn {
