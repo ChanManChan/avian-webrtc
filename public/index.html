@@ -21,20 +21,11 @@
             <span class="material-icons">message</span>
         </button>
     </header>
-    <main class="meeting-room meeting-room-main">
-        <div class="video-wrap" id="usersContainer" style="display: flex; flex-wrap: wrap;">
-            <div id="me" class="userbox">
-                <h2 style="font-size: 14px;"></h2>
-                <div class="display-center">
-                    <video autoplay muted id="localVideoPlayer"></video>
-                </div>
-            </div>
-            <div id="otherTemplate" class="userbox" style="display: none;">
-                <h2 style="font-size: 14px;"></h2>
-                <div>
-                    <video autoplay muted></video>
-                    <audio autoplay controls muted style="display: none;"></audio>
-                </div>
+    <main id="usersContainer" class="meeting-room meeting-room-main">
+        <div id="me" class="userbox">
+            <h2 style="font-size: 14px;"></h2>
+            <div class="display-center">
+                <video autoplay muted id="localVideoPlayer"></video>
             </div>
         </div>
     </main>

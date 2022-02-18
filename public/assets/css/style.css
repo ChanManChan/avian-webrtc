@@ -175,6 +175,8 @@ button.btn-hover-light:hover {
     height: 100%;
     min-height: 100%;
     background-color: var(--dark);
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .meeting-room-footer {
