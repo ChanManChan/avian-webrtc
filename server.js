@@ -26,4 +26,11 @@ io.on("connection", socket => {
         socket.emit("connected", existingUsers)
     })
 
+    socket.on("sdp process", data => {
+        socket.to(data.toConnectionId).emit("sdp process", {
+            message: data.message,
+            fromConnectionId: socket.id
+        })
+    })
+
 })

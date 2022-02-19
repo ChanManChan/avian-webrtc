@@ -17,9 +17,15 @@ const iceConfiguration = {
         }
     ]
 }
-const peerConnections = {}
+const videoStates = {
+    none: 0,
+    camera: 1,
+    screenShare: 2
+}
+const peerConnections = {}, remoteVideoStream = {}, remoteAudioStream = {}, rtpAudioSenders = {}
 let connectedUsers = []
-let serverProcess, myConnectionId
+let serverProcess, myConnectionId, localVideoPlayer, audio, isAudioMute = true, videoState = videoStates.none
+
 
 if (!userId || !meetingId) {
     alert("Username or meeting id is missing")
@@ -37,14 +43,112 @@ function eventProcessForSignalingServer() {
     socket.on("connected", existingUsers => {
         serverProcess = SDPFunction
         myConnectionId = socket.id
+        eventProcess()
+        localVideoPlayer = document.getElementById("localVideoPlayer")
         connectedUsers = [...existingUsers]
         connected = true
+        connectedUsers.forEach(user => {
+            addUser({ ...user })
+            registerNewConnection(user.connectionId)
+        })
     })
     socket.on("new node", nodeData => {
         connectedUsers.push(nodeData)
         addUser({ ...nodeData })
         registerNewConnection(nodeData.connectionId)
     })
+    socket.on("sdp process", async data => {
+        await processClient({ ...data })
+    })
+}
+
+function eventProcess() {
+    $("#micToggleBtn").click(async () => {
+        if (!audio) {
+            await loadAudio()
+        }
+        if (!audio) {
+            alert("Missing audio permissions")
+            return
+        }
+        if (isAudioMute) {
+            audio.enabled = true
+            $(this).html("<span class='material-icons'>mic</span>")
+            updateMediaSenders(audio, rtpAudioSenders)
+        } else {
+            audio.enabled = false
+            $(this).html("<span class='material-icons'>mic_off</span>")
+            removeMediaSenders(rtpAudioSenders)
+        }
+        isAudioMute = !isAudioMute
+    })
+    $("#videoCamToggle").click(async () => {
+        if (videoState == videoStates.camera) {
+            await videoProcess(videoStates.none)
+        } else {
+            await videoProcess(videoStates.camera)
+        }
+    })
+    $("#videoCamToggle").click(async () => {
+        if (videoState == videoStates.camera) {
+            await videoProcess(videoStates.none)
+        } else {
+            await videoProcess(videoStates.camera)
+        }
+    })
+    $("#screenShareBtn").click(async () => {
+        if (videoState == videoStates.screenShare) {
+            await videoProcess(videoStates.none)
+        } else {
+            await videoProcess(videoStates.screenShare)
+        }
+    })
+}
+
+async function videoProcess(newVideoState) {
+    try {
+        let videoStream = null
+        if (newVideoState == videoStates.camera) {
+            videoStream = await navigator.mediaDevices.getUserMedia({ video: { width: 1920, height: 1080 }, audio: false })
+        } else if (newVideoState == videoStates.screenShare) {
+            videoStream = await navigator.mediaDevices.getDisplayMedia({ video: { width: 1920, height: 1080 }, audio: false })
+        }
+        if (videoStream && videoStream.getVideoTracks().length > 0) {
+            const videoTrack = videoStream.getVideoTracks()[0]
+            if (videoTrack) {
+                localVideoPlayer.srcObject = new MediaStream([videoTrack])
+            }
+        }
+    } catch (error) {
+        console.error(error)
+        return
+    }
+    videoState = newVideoState
+
+}
+
+async function processClient({ message, fromConnectionId }) {
+    message = JSON.parse(message)
+    if (message.answer) {
+        await peerConnections[fromConnectionId].setRemoteDescription(new RTCSessionDescription(message.answer))
+    } else if (message.offer) {
+        if (!peerConnections[fromConnectionId]) {
+            registerNewConnection(fromConnectionId)
+        }
+        await peerConnections[fromConnectionId].setRemoteDescription(new RTCSessionDescription(message.offer))
+        const answer = await peerConnections[fromConnectionId].createAnswer()
+        await peerConnections[fromConnectionId].setLocalDescription(answer)
+        serverProcess(JSON.stringify({ answer }), fromConnectionId)
+    } else if (message.icecandidate) {
+        if (!peerConnections[fromConnectionId]) {
+            registerNewConnection(fromConnectionId)
+        }
+        try {
+            await peerConnections[fromConnectionId].addIceCandidate(message.icecandidate)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 }
 
 function addUser({ connectionId, userId, meetingId }) {
@@ -70,9 +174,32 @@ function registerNewConnection(connectionId) {
         }
     }
     connection.ontrack = function (event) {
-
+        if (!remoteVideoStream[connectionId]) {
+            remoteVideoStream[connectionId] = new MediaStream()
+        }
+        if (!remoteAudioStream[connectionId]) {
+            remoteAudioStream[connectionId] = new MediaStream()
+        }
+        if (event.track.kind == "video") {
+            remoteVideoStream[connectionId].getVideoTracks()
+                .forEach(t => remoteVideoStream[connectionId].removeTrack(t))
+            remoteVideoStream[connectionId].addTrack(event.track)
+            const remoteVideoPlayer = document.getElementById("v_" + connectionId)
+            remoteVideoPlayer.srcObject = null
+            remoteVideoPlayer.srcObject = remoteVideoStream[connectionId]
+            remoteVideoPlayer.load()
+        } else if (event.track.kind == "audio") {
+            remoteAudioStream[connectionId].getAudioTracks()
+                .forEach(t => remoteAudioStream[connectionId].removeTrack(t))
+            remoteAudioStream[connectionId].addTrack(event.track)
+            const remoteAudioPlayer = document.getElementById("a_" + connectionId)
+            remoteAudioPlayer.srcObject = null
+            remoteAudioPlayer.srcObject = remoteAudioStream[connectionId]
+            remoteAudioPlayer.load()
+        }
     }
     peerConnections[connectionId] = connection
+    return connection
 }
 
 async function setOffer(connectionId) {
