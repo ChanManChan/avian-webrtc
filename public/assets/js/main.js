@@ -1,4 +1,5 @@
-let connected = false
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
 const socket = io("http://localhost:3000")
 const urlParams = new URLSearchParams(window.location.search)
 const meetingId = urlParams.get("meetingId")
@@ -13,7 +14,7 @@ const iceConfiguration = {
             urls: "stun:stun.l.google.com:19302"
         },
         {
-            urls: "stun.stun1.l.google.com:19302"
+            urls: "stun:stun1.l.google.com:19302"
         }
     ]
 }
@@ -23,9 +24,7 @@ const videoStates = {
     screenShare: 2
 }
 const peerConnections = {}, remoteVideoStream = {}, remoteAudioStream = {}, rtpAudioSenders = {}
-let connectedUsers = []
 let serverProcess, myConnectionId, localVideoPlayer, audio, isAudioMute = true, videoState = videoStates.none
-
 
 if (!userId || !meetingId) {
     alert("Username or meeting id is missing")
@@ -43,17 +42,15 @@ function eventProcessForSignalingServer() {
     socket.on("connected", existingUsers => {
         serverProcess = SDPFunction
         myConnectionId = socket.id
+        $("#me h2").text(userId + "(Me)")
         eventProcess()
         localVideoPlayer = document.getElementById("localVideoPlayer")
-        connectedUsers = [...existingUsers]
-        connected = true
-        connectedUsers.forEach(user => {
+        existingUsers.forEach(user => {
             addUser({ ...user })
             registerNewConnection(user.connectionId)
         })
     })
     socket.on("new node", nodeData => {
-        connectedUsers.push(nodeData)
         addUser({ ...nodeData })
         registerNewConnection(nodeData.connectionId)
     })
@@ -151,11 +148,11 @@ async function processClient({ message, fromConnectionId }) {
     }
 }
 
-function addUser({ connectionId, userId, meetingId }) {
+function addUser({ connectionId, userId }) {
     const userTemplate = `
     <div id="${connectionId}" class="userbox other">
         <h2 style="font-size: 14px;">${userId}</h2>
-        <div>
+        <div class="mediaContainer">
             <video id="v_${connectionId}" autoplay muted></video>
             <audio id="a_${connectionId}" autoplay controls muted style="display: none;"></audio>
         </div>
@@ -165,7 +162,7 @@ function addUser({ connectionId, userId, meetingId }) {
 
 function registerNewConnection(connectionId) {
     const connection = new RTCPeerConnection(iceConfiguration)
-    connection.onnegotiationneeded = async function (event) {
+    connection.onnegotiationneeded = async function () {
         await setOffer(connectionId)
     }
     connection.onicecandidate = function (event) {
@@ -207,4 +204,16 @@ async function setOffer(connectionId) {
     const offer = await connection.createOffer()
     await connection.setLocalDescription(offer)
     serverProcess(JSON.stringify({ offer: connection.localDescription }), connectionId)
+}
+
+async function loadAudio() {
+
+}
+
+function updateMediaSenders() {
+
+}
+
+function removeMediaSenders() {
+
 }

@@ -228,3 +228,28 @@ button span.material-icons {
     top: 5px;
     right: 5px;
 }
+
+#usersContainer .userbox {
+    flex: 1;
+    border: 2px solid var(--lightGrey);
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    min-width: 350px;
+}
+
+#usersContainer .userbox h2 {
+    text-align: center;
+    color: var(--light);
+}
+
+#usersContainer .userbox .mediaContainer {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background-color: black;
+}
+
+#usersContainer .userbox video {
+    width: 100%;
+}
