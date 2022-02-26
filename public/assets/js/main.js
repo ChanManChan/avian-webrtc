@@ -23,8 +23,8 @@ const videoStates = {
     camera: 1,
     screenShare: 2
 }
-const peerConnections = {}, remoteVideoStream = {}, remoteAudioStream = {}, rtpAudioSenders = {}
-let serverProcess, myConnectionId, localVideoPlayer, audio, isAudioMute = true, videoState = videoStates.none
+const peerConnections = {}, remoteVideoStream = {}, remoteAudioStream = {}, rtpAudioSenders = {}, rtpVideoSenders = {}
+let serverProcess, myConnectionId, localVideoPlayer, audio, isAudioMute = true, videoState = videoStates.none, videoCamTrack
 
 if (!userId || !meetingId) {
     alert("Username or meeting id is missing")
@@ -70,26 +70,22 @@ function eventProcess() {
         }
         if (isAudioMute) {
             audio.enabled = true
-            $(this).html("<span class='material-icons'>mic</span>")
+            $("#micToggleBtn").html("<span class='material-icons'>mic</span>")
             updateMediaSenders(audio, rtpAudioSenders)
         } else {
             audio.enabled = false
-            $(this).html("<span class='material-icons'>mic_off</span>")
+            $("#micToggleBtn").html("<span class='material-icons'>mic_off</span>")
             removeMediaSenders(rtpAudioSenders)
         }
         isAudioMute = !isAudioMute
     })
     $("#videoCamToggle").click(async () => {
         if (videoState == videoStates.camera) {
+            $("#videoCamToggle").html("<span class='material-icons'>videocam_off</span>")
             await videoProcess(videoStates.none)
+            removeVideoStream(rtpVideoSenders)
         } else {
-            await videoProcess(videoStates.camera)
-        }
-    })
-    $("#videoCamToggle").click(async () => {
-        if (videoState == videoStates.camera) {
-            await videoProcess(videoStates.none)
-        } else {
+            $("#videoCamToggle").html("<span class='material-icons'>videocam_on</span>")
             await videoProcess(videoStates.camera)
         }
     })
@@ -111,9 +107,10 @@ async function videoProcess(newVideoState) {
             videoStream = await navigator.mediaDevices.getDisplayMedia({ video: { width: 1920, height: 1080 }, audio: false })
         }
         if (videoStream && videoStream.getVideoTracks().length > 0) {
-            const videoTrack = videoStream.getVideoTracks()[0]
-            if (videoTrack) {
-                localVideoPlayer.srcObject = new MediaStream([videoTrack])
+            videoCamTrack = videoStream.getVideoTracks()[0]
+            if (videoCamTrack) {
+                localVideoPlayer.srcObject = new MediaStream([videoCamTrack])
+                updateMediaSenders(videoCamTrack, rtpVideoSenders)
             }
         }
     } catch (error) {
@@ -121,7 +118,6 @@ async function videoProcess(newVideoState) {
         return
     }
     videoState = newVideoState
-
 }
 
 async function processClient({ message, fromConnectionId }) {
@@ -154,7 +150,7 @@ function addUser({ connectionId, userId }) {
         <h2 style="font-size: 14px;">${userId}</h2>
         <div class="mediaContainer">
             <video id="v_${connectionId}" autoplay muted></video>
-            <audio id="a_${connectionId}" autoplay controls muted style="display: none;"></audio>
+            <audio id="a_${connectionId}" autoplay controls style="display: none;"></audio>
         </div>
     </div>`
     $("#usersContainer").append(userTemplate)
@@ -196,6 +192,9 @@ function registerNewConnection(connectionId) {
         }
     }
     peerConnections[connectionId] = connection
+    if (videoState == videoStates.camera || videoState == videoStates.screenShare) {
+        updateMediaSenders(videoCamTrack, rtpVideoSenders)
+    }
     return connection
 }
 
@@ -206,14 +205,51 @@ async function setOffer(connectionId) {
     serverProcess(JSON.stringify({ offer: connection.localDescription }), connectionId)
 }
 
+function validConnectionStatus(connection) {
+    const validConnectionStates = ["new", "connecting", "connected"]
+    if (connection &&  validConnectionStates.includes(connection.connectionState)) {
+        return true
+    } else {
+        return false
+    }
+}
+
 async function loadAudio() {
-
+    try {
+        const audioStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true })
+        audio = audioStream.getAudioTracks()[0]
+        audio.enabled = false
+    } catch (error) {
+        console.error(error)
+    }
 }
 
-function updateMediaSenders() {
-
+async function updateMediaSenders(track, rtpSenders) {
+    for (const connectionId in peerConnections) {
+        if (validConnectionStatus(peerConnections[connectionId])) {
+            if (rtpSenders[connectionId] && rtpSenders[connectionId].track) {
+                rtpSenders[connectionId].replaceTrack(track)
+            } else {
+                rtpSenders[connectionId] = peerConnections[connectionId].addTrack(track)
+            }
+        }
+    }
 }
 
-function removeMediaSenders() {
+function removeVideoStream(rtpVideoSenders) {
+    if (videoCamTrack) {
+        videoCamTrack.stop()
+        videoCamTrack = null
+        localVideoPlayer.srcObject = null
+        removeMediaSenders(rtpVideoSenders)
+    }
+}
 
+function removeMediaSenders(rtpSenders) {
+    for (const connectionId in peerConnections) {
+        if (rtpSenders[connectionId] && validConnectionStatus(peerConnections[connectionId])) {
+            peerConnections[connectionId].removeTrack(rtpSenders[connectionId])
+            rtpSenders[connectionId] = null
+        }
+    }
 }
