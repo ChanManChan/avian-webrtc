@@ -7,7 +7,7 @@ const server = app.listen(PORT, () => console.log("Listening on port " + PORT))
 const io = require('socket.io')(server, { pingTimeout: 60000 })
 
 app.use(express.static(path.join(__dirname, "./public")))
-const userConnections = []
+let userConnections = []
 
 io.on("connection", socket => {
 
@@ -33,4 +33,13 @@ io.on("connection", socket => {
         })
     })
 
+    socket.on("disconnect", () => {
+        const disconnectedUser = userConnections.find(c => c.connectionId == socket.id)
+        if (disconnectedUser) {
+            const meetingId = disconnectedUser.meetingId
+            userConnections = userConnections.filter(c => c.connectionId != socket.id)
+            const otherUsersInMeeting = userConnections.filter(c => c.meetingId == meetingId)
+            otherUsersInMeeting.forEach(user => socket.to(user.connectionId).emit("user disconnected", { connectionId: socket.id }))
+        }
+    })
 })

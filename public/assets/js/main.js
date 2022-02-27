@@ -57,6 +57,29 @@ function eventProcessForSignalingServer() {
     socket.on("sdp process", async data => {
         await processClient({ ...data })
     })
+    socket.on("user disconnected", disconnectedUser => {
+        $("#" + disconnectedUser.connectionId).remove()
+        closeConnection(disconnectedUser.connectionId)
+    })
+}
+
+function closeConnection(connectionId) {
+    if (peerConnections[connectionId]) {
+        peerConnections[connectionId].close()
+        peerConnections[connectionId] = null
+    }
+    if (remoteAudioStream[connectionId]) {
+        remoteAudioStream[connectionId].getTracks().forEach(t => {
+            if (t.stop) t.stop()
+        })
+        remoteAudioStream[connectionId] = null
+    }
+    if (remoteVideoStream[connectionId]) {
+        remoteVideoStream[connectionId].getTracks().forEach(t => {
+            if (t.stop) t.stop()
+        })
+        remoteVideoStream[connectionId] = null
+    }
 }
 
 function eventProcess() {
@@ -91,8 +114,11 @@ function eventProcess() {
     })
     $("#screenShareBtn").click(async () => {
         if (videoState == videoStates.screenShare) {
+            $("#screenShareBtn").html("Present Now<span class='material-icons'>present_to_all</span>")
             await videoProcess(videoStates.none)
+            removeVideoStream(rtpVideoSenders)
         } else {
+            $("#screenShareBtn").html("Cancel Presentation<span class='material-icons'>cancel_presentation</span>")
             await videoProcess(videoStates.screenShare)
         }
     })
@@ -102,9 +128,15 @@ async function videoProcess(newVideoState) {
     try {
         let videoStream = null
         if (newVideoState == videoStates.camera) {
+            $("#screenShareBtn").html("Present Now<span class='material-icons'>present_to_all</span>")
             videoStream = await navigator.mediaDevices.getUserMedia({ video: { width: 1920, height: 1080 }, audio: false })
         } else if (newVideoState == videoStates.screenShare) {
+            $("#videoCamToggle").html("<span class='material-icons'>videocam_off</span>")
             videoStream = await navigator.mediaDevices.getDisplayMedia({ video: { width: 1920, height: 1080 }, audio: false })
+            videoStream.oninactive = () => {
+                removeVideoStream(rtpVideoSenders)
+                $("#screenShareBtn").html("Present Now<span class='material-icons'>present_to_all</span>")
+            }
         }
         if (videoStream && videoStream.getVideoTracks().length > 0) {
             videoCamTrack = videoStream.getVideoTracks()[0]

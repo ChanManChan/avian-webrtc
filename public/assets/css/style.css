@@ -195,6 +195,10 @@ button.btn-hover-light:hover {
     margin-right: var(--spacing);
 }
 
+.meeting-room-footer .bottom-right #screenShareBtn .material-icons {
+    margin-left: 10px;
+}
+
 .meeting-room-footer .bottom-middle button#callBtn {
     color: var(--primary);
 }
