@@ -30,7 +30,49 @@ if (!userId || !meetingId) {
     alert("Username or meeting id is missing")
     window.location.href = "/action.html"
 } else {
+    eventHandling()
     eventProcessForSignalingServer()
+}
+
+function eventHandling() {
+    $("#meetingDetailsBtn").click(() => $(".meeting-room-sidebar").addClass("open"))
+    $("#sidebarCloseBtn").click(() => $(".meeting-room-sidebar").removeClass("open"))
+    $(document).mouseup(e => {
+        const container = $(".meeting-room-sidebar.open")
+        if (!container.is(e.target) && container.has(e.target).length === 0) {
+            container.removeClass("open")
+        }
+    })
+    $("#sendBtn").click(() => sendMessage())
+    $("#sidebarInput").keyup(e => {
+        if (e.which == 13) {
+            sendMessage()
+        }
+    })
+}
+
+function sendMessage() {
+    const message = $("#sidebarInput").val().trim()
+    if (message) {
+        socket.emit("meeting message", message)
+        $("#sidebarInput").val("")
+        addMessage(message, userId)
+    }
+}
+
+function addMessage(message, from) {
+    const time = new Date().toLocaleString('en', {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true
+    })
+    const messageContainer = `
+        <div class="message-container">
+            <span>${from}</span>${time}</br>
+            ${message}
+        </div>
+    `
+    $("#sidebarContent").append(messageContainer)
 }
 
 function eventProcessForSignalingServer() {
@@ -61,6 +103,7 @@ function eventProcessForSignalingServer() {
         $("#" + disconnectedUser.connectionId).remove()
         closeConnection(disconnectedUser.connectionId)
     })
+    socket.on("forward message", ({ from, message }) => addMessage(message, from))
 }
 
 function closeConnection(connectionId) {

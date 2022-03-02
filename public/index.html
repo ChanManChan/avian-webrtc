@@ -12,15 +12,29 @@
 </head>
 
 <body>
-    <header class="meeting-room meeting-room-header">
-        <button id="participantsBtn" class="btn-hover-light">
-            <span class="material-icons">people</span>
-            <div class="participant-count">2</div>
-        </button>
-        <button id="messageBtn" class="btn-hover-light">
-            <span class="material-icons">message</span>
-        </button>
-    </header>
+    <aside class="meeting-room meeting-room-sidebar">
+        <div class="sidebar-header">
+            <h2>Meeting Details</h2>
+            <button id="sidebarCloseBtn">
+                <span class="material-icons">clear</span>
+            </button>
+        </div>
+        <div class="sidebar-btn-container">
+            <button id="participantsBtn" class="btn-hover-light">
+                <span class="material-icons">people</span>
+                Participants (<span class="participant-count">2</span>)
+            </button>
+            <button id="messageBtn" class="btn-hover-light">
+                <span class="material-icons">message</span>
+                Chat
+            </button>
+        </div>
+        <div id="sidebarContent"></div>
+        <div class="sidebarFooter">
+            <input id="sidebarInput" type="text" placeholder="Send a message to everyone" autofocus>
+            <button id="sendBtn"><span class="material-icons">send</span></button>
+        </div>
+    </aside>
     <main id="usersContainer" class="meeting-room meeting-room-main">
         <div id="me" class="userbox">
             <h2 style="font-size: 14px;"></h2>

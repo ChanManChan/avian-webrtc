@@ -32,6 +32,10 @@ a {
     color: var(--dark);
 }
 
+h2 {
+    margin: 0;
+}
+
 textarea:focus,
 input:focus {
     outline: none;
@@ -163,12 +167,73 @@ button.btn-hover-light:hover {
     color: var(--primary);
 }
 
-.meeting-room-header {
+.meeting-room-sidebar {
     position: fixed;
     top: 0;
-    right: 0;
+    right: -100%;
     background-color: var(--lightGrey);
-    border-bottom-left-radius: 5px;
+    min-height: 100vh;
+    padding: var(--spacing);
+    display: flex;
+    flex-direction: column;
+    min-width: 400px;
+    transition: right 0.2s ease-out;
+}
+
+.meeting-room-sidebar.open {
+    right: 0;
+}
+
+.meeting-room-sidebar .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.meeting-room-sidebar .sidebar-btn-container {
+    margin-bottom: var(--spacing);
+}
+
+.meeting-room-sidebar .sidebar-btn-container button:nth-child(2) {
+    margin-left: 10px;
+}
+
+.meeting-room-sidebar #sidebarContent {
+    flex: 1;
+}
+
+.meeting-room-sidebar #sidebarContent .message-container {
+    margin-bottom: 10px;
+}
+
+.meeting-room-sidebar .sidebarFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 100px;
+}
+
+.meeting-room-sidebar .sidebarFooter input#sidebarInput {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    border-bottom: 2px solid var(--primary);
+    font-weight: 300;
+    padding: 10px;
+}
+
+.meeting-room-sidebar .sidebarFooter button#sendBtn {
+    transition: color 0.2s ease-out;
+}
+
+.meeting-room-sidebar .sidebarFooter button#sendBtn:hover {
+    color: var(--primary);
+}
+
+.meeting-room-sidebar .message-container span {
+    font-weight: 700;
+    margin-right: 5px;
 }
 
 .meeting-room-main {
@@ -225,12 +290,6 @@ button span.material-icons {
 #participantsBtn {
     position: relative;
     margin-right: var(--spacing);
-}
-
-#participantsBtn .participant-count {
-    position: absolute;
-    top: 5px;
-    right: 5px;
 }
 
 #usersContainer .userbox {

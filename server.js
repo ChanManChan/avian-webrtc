@@ -42,4 +42,14 @@ io.on("connection", socket => {
             otherUsersInMeeting.forEach(user => socket.to(user.connectionId).emit("user disconnected", { connectionId: socket.id }))
         }
     })
+
+    socket.on("meeting message", message => {
+        const user = userConnections.find(u => u.connectionId == socket.id)
+        if (user) {
+            const meetingId = user.meetingId
+            const from = user.userId
+            const existingUsers = userConnections.filter(u => u.meetingId == meetingId)
+            existingUsers.forEach(u => socket.to(u.connectionId).emit("forward message", { from, message }))
+        }
+    })
 })
