@@ -24,12 +24,15 @@
                 <span class="material-icons">people</span>
                 Participants (<span class="participant-count">2</span>)
             </button>
-            <button id="messageBtn" class="btn-hover-light">
+            <button id="messageBtn" class="btn-hover-light active">
                 <span class="material-icons">message</span>
                 Chat
             </button>
         </div>
-        <div id="sidebarContent"></div>
+        <div id="participantsContainer" style="display: none;">
+            <p id="myself" class='participantName'></p>
+        </div>
+        <div id="chatContainer"></div>
         <div class="sidebarFooter">
             <input id="sidebarInput" type="text" placeholder="Send a message to everyone" autofocus>
             <button id="sendBtn"><span class="material-icons">send</span></button>

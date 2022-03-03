@@ -178,6 +178,7 @@ button.btn-hover-light:hover {
     flex-direction: column;
     min-width: 400px;
     transition: right 0.2s ease-out;
+    z-index: 1;
 }
 
 .meeting-room-sidebar.open {
@@ -198,11 +199,17 @@ button.btn-hover-light:hover {
     margin-left: 10px;
 }
 
-.meeting-room-sidebar #sidebarContent {
+.meeting-room-sidebar .sidebar-btn-container button.active {
+    background-color: var(--primaryDark);
+    color: white;
+}
+
+.meeting-room-sidebar #chatContainer,
+.meeting-room-sidebar #participantsContainer {
     flex: 1;
 }
 
-.meeting-room-sidebar #sidebarContent .message-container {
+.meeting-room-sidebar #chatContainer .message-container {
     margin-bottom: 10px;
 }
 

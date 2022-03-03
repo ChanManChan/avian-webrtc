@@ -49,6 +49,20 @@ function eventHandling() {
             sendMessage()
         }
     })
+    $("#participantsBtn").click(() => {
+        $("#participantsBtn").addClass("active")
+        $("#messageBtn").removeClass("active")
+        $(".sidebarFooter").hide()
+        $("#chatContainer").hide()
+        $("#participantsContainer").show()
+    })
+    $("#messageBtn").click(() => {
+        $("#participantsBtn").removeClass("active")
+        $("#messageBtn").addClass("active")
+        $(".sidebarFooter").show()
+        $("#chatContainer").show()
+        $("#participantsContainer").hide()
+    })
 }
 
 function sendMessage() {
@@ -72,7 +86,7 @@ function addMessage(message, from) {
             ${message}
         </div>
     `
-    $("#sidebarContent").append(messageContainer)
+    $("#chatContainer").append(messageContainer)
 }
 
 function eventProcessForSignalingServer() {
@@ -82,17 +96,20 @@ function eventProcessForSignalingServer() {
 
     socket.emit("setup", meetingData)
     socket.on("connected", existingUsers => {
+        $("span.participant-count").text(existingUsers.length + 1)
         serverProcess = SDPFunction
         myConnectionId = socket.id
         $("#me h2").text(userId + "(Me)")
         eventProcess()
         localVideoPlayer = document.getElementById("localVideoPlayer")
+        $("p.participantName#myself").text(userId)
         existingUsers.forEach(user => {
             addUser({ ...user })
             registerNewConnection(user.connectionId)
         })
     })
     socket.on("new node", nodeData => {
+        $("span.participant-count").text(nodeData.userCount)
         addUser({ ...nodeData })
         registerNewConnection(nodeData.connectionId)
     })
@@ -100,8 +117,11 @@ function eventProcessForSignalingServer() {
         await processClient({ ...data })
     })
     socket.on("user disconnected", disconnectedUser => {
-        $("#" + disconnectedUser.connectionId).remove()
-        closeConnection(disconnectedUser.connectionId)
+        const disconnectedId = disconnectedUser.connectionId
+        $("span.participant-count").text(disconnectedUser.userCount)
+        $(`#p_${disconnectedId}`).remove()
+        $("#" + disconnectedId).remove()
+        closeConnection(disconnectedId)
     })
     socket.on("forward message", ({ from, message }) => addMessage(message, from))
 }
@@ -220,7 +240,8 @@ async function processClient({ message, fromConnectionId }) {
 }
 
 function addUser({ connectionId, userId }) {
-    const userTemplate = `
+    const participantTemplate = `<p id="p_${connectionId}" class='participantName'>${userId}</p>`
+    const userChatTemplate = `
     <div id="${connectionId}" class="userbox other">
         <h2 style="font-size: 14px;">${userId}</h2>
         <div class="mediaContainer">
@@ -228,7 +249,9 @@ function addUser({ connectionId, userId }) {
             <audio id="a_${connectionId}" autoplay controls style="display: none;"></audio>
         </div>
     </div>`
-    $("#usersContainer").append(userTemplate)
+
+    $("#usersContainer").append(userChatTemplate)
+    $("#participantsContainer").append(participantTemplate)
 }
 
 function registerNewConnection(connectionId) {

@@ -20,7 +20,7 @@ io.on("connection", socket => {
 
         // inform others in the same room about the new connection
         const existingUsers = userConnections.filter(u => u.meetingId == meetingData.meetingId)
-        existingUsers.forEach(u => socket.to(u.connectionId).emit("new node", newNode))
+        existingUsers.forEach(u => socket.to(u.connectionId).emit("new node", { ...newNode, userCount: existingUsers.length + 1 }))
 
         userConnections.push(newNode)
         socket.emit("connected", existingUsers)
@@ -39,7 +39,7 @@ io.on("connection", socket => {
             const meetingId = disconnectedUser.meetingId
             userConnections = userConnections.filter(c => c.connectionId != socket.id)
             const otherUsersInMeeting = userConnections.filter(c => c.meetingId == meetingId)
-            otherUsersInMeeting.forEach(user => socket.to(user.connectionId).emit("user disconnected", { connectionId: socket.id }))
+            otherUsersInMeeting.forEach(user => socket.to(user.connectionId).emit("user disconnected", { connectionId: socket.id, userCount: otherUsersInMeeting.length }))
         }
     })
 
