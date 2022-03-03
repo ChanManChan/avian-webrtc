@@ -195,8 +195,8 @@ button.btn-hover-light:hover {
     margin-bottom: var(--spacing);
 }
 
-.meeting-room-sidebar .sidebar-btn-container button:nth-child(2) {
-    margin-left: 10px;
+.meeting-room-sidebar .sidebar-btn-container button:not(:last-child) {
+    margin-right: 10px;
 }
 
 .meeting-room-sidebar .sidebar-btn-container button.active {
@@ -296,7 +296,6 @@ button span.material-icons {
 
 #participantsBtn {
     position: relative;
-    margin-right: var(--spacing);
 }
 
 #usersContainer .userbox {
@@ -322,4 +321,50 @@ button span.material-icons {
 
 #usersContainer .userbox video {
     width: 100%;
+}
+
+/* Popup */
+
+.popup {
+    color: var(--dark);
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 2;
+    border-radius: 4px;
+    padding: var(--spacing);
+    background-color: var(--light);
+    transform: translate(-50%, -50%);
+    border: 1px solid var(--primaryLight);
+}
+
+.popup h2 {
+    font-size: 28px;
+}
+
+.popup .popupBtnContainer {
+    margin-top: var(--spacing);
+}
+
+.popup .popupBtnContainer button {
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease-out, color 0.2s ease-out;
+}
+
+.popup .popupBtnContainer button#leaveBtn {
+    margin-right: var(--spacing);
+    background-color: var(--primary);
+    color: white;
+}
+
+.popup .popupBtnContainer button#leaveBtn:hover {
+    background-color: var(--primaryDark);
+    color: var(--light);
+}
+
+.popup .popupBtnContainer button#cancelBtn:hover {
+    background-color: var(--lightGrey);
 }

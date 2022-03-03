@@ -12,6 +12,13 @@
 </head>
 
 <body>
+    <div class="popup">
+        <h2>Leave the meeting?</h2>
+        <div class="popupBtnContainer">
+            <button id="leaveBtn">Leave</button>
+            <button id="cancelBtn">Cancel</button>
+        </div>
+    </div>
     <aside class="meeting-room meeting-room-sidebar">
         <div class="sidebar-header">
             <h2>Meeting Details</h2>
@@ -28,11 +35,25 @@
                 <span class="material-icons">message</span>
                 Chat
             </button>
+            <button id="moreBtn" class="btn-hover-light">
+                <span class="material-icons">more</span>
+                More
+            </button>
         </div>
         <div id="participantsContainer" style="display: none;">
             <p id="myself" class='participantName'></p>
         </div>
         <div id="chatContainer"></div>
+        <div id="moreContainer">
+            <div>
+                <p>Joining Info</p>
+                <p></p>
+                <button>Copy Joining Info</button>
+            </div>
+            <div>
+                <button>Attachment</button>
+            </div>
+        </div>
         <div class="sidebarFooter">
             <input id="sidebarInput" type="text" placeholder="Send a message to everyone" autofocus>
             <button id="sendBtn"><span class="material-icons">send</span></button>

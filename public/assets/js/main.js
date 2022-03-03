@@ -38,10 +38,18 @@ function eventHandling() {
     $("#meetingDetailsBtn").click(() => $(".meeting-room-sidebar").addClass("open"))
     $("#sidebarCloseBtn").click(() => $(".meeting-room-sidebar").removeClass("open"))
     $(document).mouseup(e => {
-        const container = $(".meeting-room-sidebar.open")
-        if (!container.is(e.target) && container.has(e.target).length === 0) {
-            container.removeClass("open")
-        }
+        const containers = $(".meeting-room-sidebar.open, div.popup")
+        $.each(containers, (_, container) => {
+            container = $(container)
+            if (!container.is(e.target) && container.has(e.target).length === 0) {
+                if (container.hasClass("meeting-room-sidebar")) {
+                    container.removeClass("open")
+                }
+                if (container.hasClass("popup")) {
+                    container.hide()
+                }
+            }
+        })
     })
     $("#sendBtn").click(() => sendMessage())
     $("#sidebarInput").keyup(e => {
@@ -51,18 +59,40 @@ function eventHandling() {
     })
     $("#participantsBtn").click(() => {
         $("#participantsBtn").addClass("active")
+        $("#participantsContainer").show()
+
         $("#messageBtn").removeClass("active")
         $(".sidebarFooter").hide()
         $("#chatContainer").hide()
-        $("#participantsContainer").show()
+
+        $("#moreBtn").removeClass("active")
+        $("#moreContainer").hide()
     })
     $("#messageBtn").click(() => {
-        $("#participantsBtn").removeClass("active")
         $("#messageBtn").addClass("active")
         $(".sidebarFooter").show()
         $("#chatContainer").show()
+
+        $("#participantsBtn").removeClass("active")
         $("#participantsContainer").hide()
+
+        $("#moreBtn").removeClass("active")
+        $("#moreContainer").hide()
     })
+    $("#moreBtn").click(() => {
+        $("#moreBtn").addClass("active")
+        $("#moreContainer").show()
+
+        $("#participantsBtn").removeClass("active")
+        $("#participantsContainer").hide()
+        
+        $("#messageBtn").removeClass("active")
+        $(".sidebarFooter").hide()
+        $("#chatContainer").hide()
+    })
+    $("#callBtn").click(() => $(".popup").show())
+    $(".popup #cancelBtn").click(() => $(".popup").hide())
+    $(".popup #leaveBtn").click(() => window.location.href = "/action.html")
 }
 
 function sendMessage() {
