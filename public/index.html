@@ -45,13 +45,21 @@
         </div>
         <div id="chatContainer"></div>
         <div id="moreContainer">
-            <div>
+            <div class="joiningInfoContainer">
                 <p>Joining Info</p>
-                <p></p>
-                <button>Copy Joining Info</button>
+                <p id="joinLink"></p>
+                <button id="joinInfoCopyBtn" class="btn-hover-light">
+                    <span class="material-icons">content_copy</span>Copy Joining Info
+                </button>
+                <span id="copiedNotification" style="display: none;">
+                    <span class="material-icons">task_alt</span>
+                    Copied
+                </span>
             </div>
-            <div>
-                <button>Attachment</button>
+            <div class="extraFunctionalities">
+                <button id="attachmentBtn" class="btn-hover-light">
+                    <span class="material-icons">attachment</span>Attachment
+                </button>
             </div>
         </div>
         <div class="sidebarFooter">

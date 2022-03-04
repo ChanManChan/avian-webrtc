@@ -368,3 +368,40 @@ button span.material-icons {
 .popup .popupBtnContainer button#cancelBtn:hover {
     background-color: var(--lightGrey);
 }
+
+#moreContainer {
+    display: none;
+}
+
+#moreContainer #joinLink {
+    font-weight: 300;
+}
+
+#moreContainer .joiningInfoContainer {
+    padding: var(--spacing);
+    border-bottom: 1px solid var(--dark);
+}
+
+#moreContainer .extraFunctionalities {
+    padding: var(--spacing);
+}
+
+#moreContainer .joiningInfoContainer p:first-child {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+#moreContainer button .material-icons {
+    margin-right: 5px;
+}
+
+#moreContainer #copiedNotification {
+    margin-left: var(--spacing);
+    color: var(--greyText);
+    font-size: 14px;
+    font-weight: 300;
+}
+
+#moreContainer #copiedNotification .material-icons {
+    vertical-align: middle;
+}

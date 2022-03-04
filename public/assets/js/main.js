@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
-const socket = io("http://localhost:3000")
+const baseUrl = "http://localhost:3000"
+const socket = io(baseUrl)
 const urlParams = new URLSearchParams(window.location.search)
 const meetingId = urlParams.get("meetingId")
 const userId = window.prompt("Enter your username")
@@ -30,6 +31,7 @@ if (!userId || !meetingId) {
     alert("Username or meeting id is missing")
     window.location.href = "/action.html"
 } else {
+    $("#joinLink").text(window.location.href)
     eventHandling()
     eventProcessForSignalingServer()
 }
@@ -93,6 +95,12 @@ function eventHandling() {
     $("#callBtn").click(() => $(".popup").show())
     $(".popup #cancelBtn").click(() => $(".popup").hide())
     $(".popup #leaveBtn").click(() => window.location.href = "/action.html")
+    $("#joinInfoCopyBtn").click(() => {
+        navigator.clipboard.writeText(window.location.href)
+        $("#copiedNotification").show()
+        setTimeout(() => $("#copiedNotification").hide(), 1000)
+    })
+    $("#usersContainer").on("dblclick", "video", function() {this.requestFullscreen()})
 }
 
 function sendMessage() {
