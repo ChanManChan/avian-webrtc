@@ -56,6 +56,15 @@ io.on("connection", socket => {
             existingUsers.forEach(u => socket.to(u.connectionId).emit("forward message", { from, message }))
         }
     })
+
+    socket.on("meeting file transfer", data => {
+        const user = userConnections.find(u => u.connectionId == socket.id)
+        if (user) {
+            const meetingId = user.meetingId
+            const existingUsers = userConnections.filter(u => u.meetingId == meetingId)
+            existingUsers.forEach(u => socket.to(u.connectionId).emit("forward attachment", { ...data }))
+        }
+    })
 })
 
 app.post("/attachment", (req, res, next) => {

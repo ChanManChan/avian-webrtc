@@ -439,3 +439,27 @@ button span.material-icons {
     vertical-align: middle;
 }
 
+#attachmentsContainer {
+    padding: var(--spacing);
+}
+
+#attachmentsContainer h2 {
+    font-size: 18px;
+}
+
+#attachmentsContainer .attachmentInfo {
+    margin-bottom: 10px;
+}
+
+#attachmentsContainer .attachmentInfo a {
+    text-decoration: underline;
+    color: var(--primaryDark);
+}
+
+#attachmentsContainer p.emptyInfo {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--dark);
+    margin-top: var(--spacing);
+}

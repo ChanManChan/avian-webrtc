@@ -25,7 +25,7 @@ const videoStates = {
     screenShare: 2
 }
 const peerConnections = {}, remoteVideoStream = {}, remoteAudioStream = {}, rtpAudioSenders = {}, rtpVideoSenders = {}
-let serverProcess, myConnectionId, localVideoPlayer, audio, isAudioMute = true, videoState = videoStates.none, videoCamTrack
+let serverProcess, myConnectionId, localVideoPlayer, audio, isAudioMute = true, videoState = videoStates.none, videoCamTrack, mediaRecorder
 
 if (!userId || !meetingId) {
     alert("Username or meeting id is missing")
@@ -120,7 +120,60 @@ function eventHandling() {
                 console.log(response)
             }
         })
+
+        $("#attachmentsContainer p.emptyInfo").remove()
+        const attachedFileName = $("#fileInput").prop('files')[0].name
+        const attachmentFilePath = `attachments/${meetingId}/${attachedFileName}`
+        $("#attachmentsContainer").append(`
+            <div class="attachmentInfo">
+                <strong>${userId}</strong>:
+                <a href="${attachmentFilePath}" download>${attachedFileName}</a>
+            </div>
+        `)
+        $("#fileInput").val("")
+        socket.emit("meeting file transfer", {
+            userId,
+            meetingId,
+            attachedFileName,
+            attachmentFilePath
+        })
     })
+    $("#meetingRecordBtn").click(async function() {
+        if ($(this).hasClass("recording")) {
+            $(this).removeClass("recording").html("Start Recording<span class='material-icons'>emergency_recording</span>")
+            mediaRecorder.stop()
+        } else {
+            $(this).addClass("recording").html("Stop Recording<span class='material-icons'>cancel</span>")
+            await startRecording()
+        }
+    })
+}
+
+async function startRecording() {
+    const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false })
+    const audioStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true })
+    const stream = new MediaStream([...screenStream.getTracks(), ...audioStream.getTracks()])
+    mediaRecorder = new MediaRecorder(stream)
+    const chunks = []
+    mediaRecorder.start()
+    mediaRecorder.onstop = function() {
+        stream.getTracks().forEach(track => track.stop())
+        const blob = new Blob(chunks, { type: "video/webm" })
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.style.display = "none"
+        a.href = url
+        a.download = prompt("Enter a name for your recording") + ".webm"
+        document.body.appendChild(a)
+        a.click()
+        setTimeout(() => {
+            document.body.removeChild(a)
+            window.URL.revokeObjectURL(url)
+        }, 100)
+    }
+    mediaRecorder.ondataavailable = function(e) {
+        chunks.push(e.data)
+    }
 }
 
 function sendMessage() {
@@ -182,6 +235,15 @@ function eventProcessForSignalingServer() {
         closeConnection(disconnectedId)
     })
     socket.on("forward message", ({ from, message }) => addMessage(message, from))
+    socket.on("forward attachment", ({ userId, attachmentFilePath, attachedFileName }) => {
+        $("#attachmentsContainer p.emptyInfo").remove()
+        $("#attachmentsContainer").append(`
+            <div class="attachmentInfo">
+                <strong>${userId}</strong>:
+                <a href="${attachmentFilePath}" download>${attachedFileName}</a>
+            </div>
+        `)
+    })
 }
 
 function closeConnection(connectionId) {
