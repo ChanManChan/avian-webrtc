@@ -386,6 +386,39 @@ button span.material-icons {
     padding: var(--spacing);
 }
 
+#moreContainer .extraFunctionalities .file-input-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+#moreContainer .extraFunctionalities form#uploadForm {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+#moreContainer .extraFunctionalities form input#fileInput::file-selector-button {
+    border: none;
+    outline: none;
+    background-color: var(--primaryLight);
+    color: white;
+    padding: var(--spacing);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s ease-out;
+    margin-right: var(--spacing);
+}
+
+#moreContainer .extraFunctionalities form input#fileInput::file-selector-button:hover {
+    background-color: var(--primaryDark);
+}
+
+#moreContainer .extraFunctionalities .file-input-label {
+    margin-bottom: var(--spacing);
+    font-size: 18px;
+    font-weight: 700;
+}
+
 #moreContainer .joiningInfoContainer p:first-child {
     font-size: 18px;
     font-weight: 700;
@@ -405,3 +438,4 @@ button span.material-icons {
 #moreContainer #copiedNotification .material-icons {
     vertical-align: middle;
 }
+

@@ -101,6 +101,26 @@ function eventHandling() {
         setTimeout(() => $("#copiedNotification").hide(), 1000)
     })
     $("#usersContainer").on("dblclick", "video", function() {this.requestFullscreen()})
+    document.getElementById("uploadForm").onsubmit = function(e) {
+        e.preventDefault()
+    }
+    $("#fileShareBtn").click(() => {
+        const attachment = $("#fileInput").prop('files')[0]
+        const formData = new FormData()
+        formData.append('attachment', attachment)
+        formData.append('meetingId', meetingId)
+        formData.append('userId', userId)
+        $.ajax({
+            url: baseUrl + "/attachment",
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                console.log(response)
+            }
+        })
+    })
 }
 
 function sendMessage() {

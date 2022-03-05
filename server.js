@@ -1,12 +1,16 @@
+/* eslint-disable no-unused-vars */
 const express = require('express')
 const path = require('path')
+const fs = require('fs')
 
 const app = express()
 const PORT = 3000
 const server = app.listen(PORT, () => console.log("Listening on port " + PORT))
 const io = require('socket.io')(server, { pingTimeout: 60000 })
+const expressFileUpload = require('express-fileupload')
 
 app.use(express.static(path.join(__dirname, "./public")))
+app.use(expressFileUpload())
 let userConnections = []
 
 io.on("connection", socket => {
@@ -52,4 +56,22 @@ io.on("connection", socket => {
             existingUsers.forEach(u => socket.to(u.connectionId).emit("forward message", { from, message }))
         }
     })
+})
+
+app.post("/attachment", (req, res, next) => {
+    const data = req.body
+    const attachment = req.files.attachment
+    const dir = `public/attachments/${data.meetingId}/`
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir)
+    }
+
+    attachment.mv(dir + attachment.name, function(error) {
+        if (error) {
+            console.error("Could not upload the attachment: ", error)
+            res.sendStatus(500)
+        }
+    })
+
+    res.status(200).send("File uploaded successfully")
 })

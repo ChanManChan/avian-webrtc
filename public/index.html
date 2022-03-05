@@ -57,9 +57,16 @@
                 </span>
             </div>
             <div class="extraFunctionalities">
-                <button id="attachmentBtn" class="btn-hover-light">
-                    <span class="material-icons">attachment</span>Attachment
-                </button>
+                <form enctype="multipart/form-data" ref="uploadForm" id="uploadForm">
+                    <div class="file-input-wrapper">
+                        <label for="fileInput" class="file-input-label">Select a file to share</label>
+                        <input type="file" id="fileInput" name="imageFile">
+                    </div>
+                    <button id="fileShareBtn" class="btn-hover-light">
+                        <span class="material-icons">share</span>
+                        Share
+                    </button>
+                </form>
             </div>
         </div>
         <div class="sidebarFooter">
